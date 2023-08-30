@@ -1,0 +1,125 @@
+{% extends "utilities/base.html" %}
+
+{% block head %}
+	<title>{{page_name}}</title>
+{% endblock %}
+
+{% block content %}
+{% include 'utilities/detail_search_iterator.html' %}
+
+<div class="grid-container"> 
+	<div class="grid-item">
+        {% if instance.has_permission or perms.utilities.view_generic %}
+
+            {% if instance.thumbnail %}
+                <img id='big-image' class="big-img" 
+                    src="{{instance.thumbnail.url}}">  
+            {% else %}
+                <img id='big-image' class="big-img op"
+                     src="media/no_image_available.png">
+            {% endif %}
+
+            {% if instance.image_file or instance.thumbnail %}
+                {% if not instance.has_permission %}
+                    <p>
+                        <small>
+                            End users cannot see this picture, current
+                            permission setting does not allow it
+                        </small>    
+                    </p>
+                {% endif %}
+            {% endif %}
+
+        {% elif instance.image_file or instance.thumbnail %}
+            <p> No permission to view this image</p>
+        {% endif %}
+	</div>
+	<div class="grid-item">
+
+        {% if instance.has_permission or perms.utilities.view_generic %}
+
+            {% if instance.embed_video %}	
+                <iframe width="500" height="300" 
+                    src="{{instance.embed_video}}" 
+                    title="video player" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; 
+                        encrypted-media; gyroscope; picture-in-picture" 
+                     allowfullscreen>
+                </iframe>
+                {% if not instance.has_permission %}
+                    <p>
+                        <small>
+                            End users cannot see this video clip, current
+                            permission setting does not allow it
+                        </small>    
+                    </p>
+                {% endif %}
+
+            {% endif %}
+
+        {% endif %}
+
+	</div>
+	<div class="grid-item wide">
+		<h3>{{instance.title_original}} 
+        {% if perms.utilities.add_generic %}
+			<a class="btn btn-link btn-sm ml-auto"
+				href = "{% url instance.edit_url instance.pk %}"
+				role="button"><i class="far fa-edit text-secondary"></i>
+            </a>
+        {% endif %}
+		</h3>
+
+	{% with instance as i %}
+		{% if i.title_english and i.title_english != i.title_original%}
+			<p><small>({{i.title_english}})</small></p>
+		{% endif %}
+	{% endwith %}
+
+		<hr>
+	</div>
+
+	<div class="info">
+		<div class="grid-item general">
+
+{% with i='utilities/detail_info_single.html' %}
+{% with il='utilities/detail_info_loop.html' %}
+
+{% include i with name='Film type:' info=instance.film_type %}
+
+{% include il with name='Director:' others=directors unk='true' link='yes'%}
+{% include il with name='Writer:' others=writers unk='true' link='yes'%}
+{% include il with name='Film company:' others=film_companies unk='false' link='no'%}
+{% include il with name='Creator:' others=creators unk='false' link='yes'%}
+{% include il with name='Language:' others=languages unk='true' link='no'%}
+{% include il with name='Subtitle:' others=subtitles unk='false' link='no'%}
+{% include il with name='Famine:' others=famines unk='true' link='yes'%}
+{% include il with name='Location shot:' others=loc_shot unk='false' link='loc'%}
+{% include il with name='Setting:' others=settings unk='true' link='loc'%}
+
+{% include i with name='Created:' info=instance.date_created%}
+{% include i with name='Released:' info=instance.date_released%}
+{% include i with name='Keywords:' info=instance.keyword_names%}
+{% include i with name='Collection:' info=instance.collection%}
+
+
+{% endwith %}
+{% endwith %}
+
+{% include 'utilities/show_info_links.html' %}
+
+		</div>
+
+
+		<div class="grid-item description">
+			{% if instance.description %}
+				{{instance.description }}
+			{% endif %}
+		</div>
+	</div>
+</div>
+
+{% include 'utilities/detail_style.html' %}
+
+{% endblock %}

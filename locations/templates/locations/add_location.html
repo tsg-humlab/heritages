@@ -1,0 +1,87 @@
+{% extends "utilities/base.html" %}
+{% load getattribute %}
+
+{% block head %}
+	{{form.media.css}}
+	<title>{{page_name}}</title>
+{% endblock %}
+
+{% block content %}
+<form method="post"> 
+	{% csrf_token %}
+	<div class="col-md-12 d-flex">
+		<h4 class="col-2 ml-0 pl-0">{{page_name}}</h4>
+		{% include 'utilities/save.html' %}
+	</div>
+	<hr>
+
+	<table class="table table-borderless table-sm" id = "form_table">
+	<tr class="d-flex">
+		<td class="col-2">name</th>
+		<td class="col-9">{{form.name}} {{form.name.error}}</td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">location type</th>
+		<td class="col-9">{{form.location_type}} {{form.location_type.error}}</td>
+		{% if request.user|has_group:"typemaster" %}
+		<td><a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+			href = "{% url 'locations:add_location_type' %}"
+			role="button"><i class="fa fa-plus"></i></a></td>
+		{% endif %}
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">latitude</th>
+		<td class="col-9">{{form.latitude}} {{form.latitude.error}}</td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">longitude</th>
+		<td class="col-9">{{form.longitude}} {{form.longitude.error}}</td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">comments</th>
+		<td class="col-9">{{form.notes}} {{form.notes.error}}</td>
+	</tr>
+	</table>
+
+	<hr>
+
+	{{location_relation_formset.management_form}}
+	<table class="table table-borderless"> 
+		<tr class ="d-flex">
+			<th class="col-8" id='location_container'>Location
+				<a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+					 href ="{% url 'locations:add_location' 'inline' %}" role="button">
+						<i class="fa fa-plus"></i>
+				</a>
+			</th>
+			<th><i class="fa fa-times text-danger"></i></th>
+		</tr>
+		{% for f in location_relation_formset.forms %}
+			<tr class ="d-flex">
+				<td class="col-8">{{f.container}} {{f.container.errors}}</td>
+				<td class="col-1">{{f.DELETE}} {{f.id}}</td>
+			</tr>
+		{% endfor %}
+	</table>
+
+
+
+
+	<div class="col-md-12 d-flex">
+		<div class="col-2"></div>
+		{% include 'utilities/save.html' %}
+	</div>
+</form>
+
+
+
+
+
+
+{{form.media.js}}
+{% include 'utilities/helper.html' %}
+<script>
+console.log(helper['location container'])
+tippy('#location_container',{content: helper['location container'],allowHTML:true,});
+</script>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "utilities/base.html" %}
+{% load getattribute %}
+
+{% block head %}
+	{{form.media.css}}
+	<title>{{page_name}}</title>
+{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" id = "form">
+	{% csrf_token %}
+	<div class="col-md-12 d-flex">
+		<h4 class="col-2 ml-0 pl-0">{{page_name}}</h4>
+		{% include 'utilities/save.html' %}
+		<div class="d-flex justify-content-end"> 
+			{% include 'utilities/list_button.html' %}
+		</div>
+
+		{% include 'utilities/protocol_view_link.html' %}
+		{% include 'utilities/detail_view_link.html' %}
+		{% include 'utilities/flag.html' %}
+	</div>
+	<hr>
+	{% if 'Edit' in page_name and 'unknown' not in crud.last_update %}
+		{% include 'utilities/change_log.html' %}
+		{% else %} <p class="mb-4"></p>
+	{% endif %}
+
+	<table class="table table-borderless table-sm" id = "form_table">
+	<tr class="d-flex">
+		<td class="col-2">Title Original</th>
+		<td class="col-9">{{form.title_original}} {{form.title_original.error}}</td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Title English</th>
+		<td class="col-9">{{form.title_english}} {{form.title_english.error}}</td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Text type</th>
+		<td class="col-9">{{form.text_type}} {{form.text_type.error}}</td>
+		{% if request.user|has_group:"typemaster" %}
+		<td><a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+			href = "{% url 'sources:add_text_type' %}"
+			role="button"><i class="fa fa-plus"></i></a></td>
+		{% endif %}
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Authors</th>
+		<td class="col-9">{{form.authors}} {{form.authors.error}}</td>
+		<td><a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+			href = "{% url 'persons:add_person' 'inline'%}"
+			role="button"><i class="fa fa-plus"></i></a></td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Institution (authors)</th>
+		<td class="col-9">{{form.institution_authors}} {{form.institution_authors.error}}</td>
+		<td><a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+			href = "{% url 'sources:add_institution' %}"
+			role="button"><i class="fa fa-plus"></i></a></td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Editors</th>
+		<td class="col-9">{{form.editors}} {{form.editors.error}}</td>
+		<td><a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+			href = "{% url 'persons:add_person' 'inline'%}"
+			role="button"><i class="fa fa-plus"></i></a></td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Translators</th>
+		<td class="col-9">{{form.translators}} {{form.translators.error}}</td>
+		<td><a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+			href = "{% url 'persons:add_person' 'inline'%}"
+			role="button"><i class="fa fa-plus"></i></a></td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Publishing outlet</th>
+		<td class="col-9">{{form.publishing_outlet}} {{form.publishing_outlet.error}}</td>
+		<td><a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+			href = "{% url 'sources:add_publishing_outlet' %}"
+			role="button"><i class="fa fa-plus"></i></a></td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Publishers</th>
+		<td class="col-9">{{form.publishers}} {{form.publishers.error}}</td>
+		<td><a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+			href = "{% url 'sources:add_publisher' %}"
+			role="button"><i class="fa fa-plus"></i></a></td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Source link</th>
+		<td class="col-9">{{form.source_link}} {{form.source_link.error}}</td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Languages</th>
+		<td class="col-9">{{form.languages}} {{form.languages.error}}</td>
+		<td><a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+			href = "{% url 'misc:add_language' %}"
+			role="button"><i class="fa fa-plus"></i></a></td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Original languages</th>
+		<td class="col-9">{{form.original_languages}} {{form.original_languages.error}}</td>
+		<td><a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+			href = "{% url 'misc:add_language' %}"
+			role="button"><i class="fa fa-plus"></i></a></td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Text file</th>
+		<td class="col-9">{{form.text_file}} {{form.text_file.error}}</td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Excerpt</th>
+		<td class="col-9">{{form.excerpt_file}} {{form.excerpt_file.error}}</td>
+	</tr>
+	<tr class="d-flex">
+		<td class="col-2">Locations</th>
+		<td class="col-9">{{form.locations}} {{form.locations.error}}</td>
+		<td><a class = "btn btn-link btn-sm ml-auto text-dark" target = "_blank"
+			href = "{% url 'locations:add_location' 'inline'%}"
+			role="button"><i class="fa fa-plus"></i></a></td>
+	</tr>
+	{% include 'utilities/add_source.html' %}
+	</table>
+		<div class="col-md-12 d-flex">
+			<div class="col-2"></div>
+			{% include 'utilities/save.html' %}
+		</div>
+</form>
+<br>
+{{form.media.js}}
+{% include 'utilities/helper.html' %}
+{% endblock %}

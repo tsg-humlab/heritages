@@ -1,0 +1,112 @@
+{% extends "utilities/base.html" %}
+
+{% load static %}
+{% block head %}
+	<link rel="stylesheet" href="{% static 'utilities/search_tile.css' %}" />
+{% endblock %}
+
+{% block content %}
+
+<!-- checks  whether user has view_generic permission -->
+{{perms.utilities.view_generic|json_script:"perm"}}
+ 
+{% include 'utilities/sidebar.html' %}
+
+{% for instance in instances %}
+	<div class="tile tile-item" 
+		 id='{{instance.identifier}}' 
+		 data-date_range={{instance.year}}>
+        <img id='{{instance.identifier}}-img' 
+            {% if not instance.thumbnail %}
+                class="tile-img op small-img" 
+                src="{{instance.icon_svg}}" 
+            {% elif instance.has_permission or perms.utilities.view_generic %}
+                class="tile-img" 
+                src="{{instance.thumbnail.url}}" 
+            {% else %}
+                {% if instance.image_file %}
+                    class="tile-img op small-img not-allowed" 
+                {% else %}
+                    class="tile-img op small-img" 
+                {% endif %}
+                src="{{instance.icon_svg}}" 
+            {% endif %}
+            alt = ""
+            onclick="display_large_image('{{instance.identifier}}')"> 
+		<p class="p-title">
+			<i class="{{instance.icon}} fa-lg" aria-hidden="true"></i>
+			<a 
+                {% if not instance.has_permission %}
+                    {% if instance.thumbnail or instance.image_file %}
+                        class="not-allowed" 
+                    {% endif %}
+                {% endif %}
+				{% if instance.detail_url %}
+					href = "{% url instance.detail_url instance.pk %}"
+				{% else %}
+					href = "{% url instance.edit_url instance.pk %}"
+				{% endif %}
+				onclick='set_clicked_instance("{{instance.identifier}}")'
+				role = "button">
+				{{instance.title|truncatechars:31}}
+			</a>
+		</p>
+	</div>
+{% endfor %}
+
+<div class="modal" id="myModal">
+  <!-- Modal content -->
+
+	<div class="grid-container"> 
+		<div class="grid-item">
+			<i id="modal-icon" class="" style="color:white;"></i>
+		</div>
+		<div class="grid-item">
+			<a id="prev_modal" class="prev_next_modal prev_modal" href="#" 
+				role = "button">
+				<i class="fas fa-chevron-left"></i>
+			</a>
+		</div>
+		<div class="grid-item">
+			<a id="next_modal" class="prev_next_modal" href="#" role = "button">
+				<i class="fas fa-chevron-right"></i>
+			</a>
+		</div>
+		<div class="grid-item">
+			<a id="close_modal" class="close_modal" onclick="return false;" 
+				href="#/" role = "button">
+				<span class="close">&times;</span>
+			</a>
+		</div>
+	</div>
+
+  <div class="modal-content">
+	<img id="modal-img" class="big-img" src="" 
+		alt="">
+
+	<a  id="modal-edit-link" class="modal-edit-link"
+		href = ""
+		role = "button">
+			<p id="modal-title" class="modal-title">
+			Some text in the Modal..</p>
+	</a>
+	<p id="modal-date" class="modal-date">Some text in the Modal..
+	</p>
+  </div>
+
+  <div>
+	<!-- <i class="fas fa-circle" style="color:white;"></i> -->
+	<p id="one_of_x" class = 'one_of_x'></p>
+  </div>
+
+    <div>
+        <p id="permission" class = "permission"></p>
+    </div>
+
+
+</div>
+
+<script src="{% static 'utilities/search_tile.js' %}"></script>
+
+{% endblock %}
+
